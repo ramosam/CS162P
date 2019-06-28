@@ -27,7 +27,7 @@ def is_power1(a, b):
     elif (a == 0 or b == 0):
         return False
 
-    # Using variable recursively
+    # Using variable iteration
     while (a % b == 0):
         a /= b
     
@@ -44,7 +44,7 @@ def is_power2(a, b):
     # -Infinity or 0^x = 0
     elif (a == 0 or b == 0):
         return False
-        
+
     # Recursively compute the power of b
     pow = 1
     while (pow < a):
