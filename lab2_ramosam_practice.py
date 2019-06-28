@@ -24,7 +24,7 @@ def factorial(n):
         return result
 
 # factorial(4)
-
+############################################################
 
 def print_n(s, n):
     if n <= 0:
@@ -53,7 +53,7 @@ def print_n_iteration(s, n):
 # print_n_iteration('sIterated', 0)
 
 # print("End")
-
+############################################################
 
 ### Simple Tail Recursion ###
 # Iteration
@@ -79,5 +79,46 @@ def summer_of_nums(value, sum):
     return summer_of_nums(value-1, sum)
 
 # print(summer_of_nums(4, 0))
+############################################################
 
+# String Reverser
+def string_reverser(rev_string):
+    if len(rev_string) <= 1:
+        return rev_string
+    last_letter = rev_string[-1]
+    return last_letter + string_reverser(rev_string[:-1])
 
+# print(string_reverser("3456789"))
+# print(string_reverser(""))
+# print(string_reverser("Something awesome is happening"))
+############################################################
+
+# Exponent
+def make_exponent_calc(base, expon):
+    # guardian 
+    if expon <= 0:
+        return 1
+    # Recursion
+    return base * make_exponent_calc(base, expon-1)
+
+# print(make_exponent_calc(2, 2))
+# print(make_exponent_calc(3, 3))
+# print(make_exponent_calc(4, 4))
+# print(make_exponent_calc(0, 0))
+############################################################
+
+# Palindrome
+def isPalindrome(pali_string):
+    if len(pali_string) <= 1:
+        return True
+    
+    return (pali_string[0].lower() == pali_string[-1].lower()) and isPalindrome(pali_string[1:-1])
+
+# print(isPalindrome("scuba"))
+# print(isPalindrome("scubas"))
+# print(isPalindrome("tacocat"))
+# print(isPalindrome("dad"))
+# print(isPalindrome("Mom"))
+############################################################
+
+# Substring
