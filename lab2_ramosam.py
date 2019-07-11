@@ -11,13 +11,17 @@ Consider the following:
 
 # Recursive Lab
 def special_base_to_power(base, expon):
+  # Handling exception
     if expon <= 0:
         return 1
+    # Accumulator
     sum = 0
+    # Handle even and odd numbers
     if expon % 2 == 0:
         sum += special_base_to_power(base, expon/2) * special_base_to_power(base, expon/2)
     else:
         sum += base * special_base_to_power(base, expon-1)
+    # Return calculated value
     return sum
 
 print(special_base_to_power(5, 1))      # 5
