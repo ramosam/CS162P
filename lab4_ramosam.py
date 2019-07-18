@@ -231,34 +231,4 @@ def play_game(dungeon_board, game_over = False):
 
 
 
-
-# play_game(dungeon)
-trap_count = input('How many traps would you like to avoid? ')
-count = 1
-try: 
-	count = int(trap_count)
-	if count >= (max_size * max_size / 2):
-		print("You're nuts. I'm taking away your priveleges.")
-		count = 10
-	elif count < 0:
-		print("You're trapping the dungeon?")
-		count = 1
-
-except ValueError:
-	print("I'll just decide for you.")
-	
-create_dungeon(dungeon, count)
-display_dungeon(dungeon)
-while (not game_over):
-	player_origin_pos, player_dest_pos = get_move(dungeon)
-	game_over, dungeon = update_dungeon(dungeon, player_origin_pos, player_dest_pos)
-	display_dungeon(dungeon)
-replay = input('Would you like to try again? Y/y to continue, or any other character to quit. ')
-if replay.upper() == "Y":
-	new_dungeon = []
-	play_game(new_dungeon)
-else: 
-	print("Ta ta for now.")
-
-
-print("Crawl Ended")
+play_game(dungeon)
