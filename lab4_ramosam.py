@@ -9,6 +9,7 @@ max_size = 10
 player = ' P '
 deadly_trap = ' T '
 treasure = ' X '
+monster = ' M '
 floor = ' . '
 game_over = False
 
@@ -27,7 +28,7 @@ def build_dungeon(dungeon_board):
 
 def display_dungeon(dungeon_board):
 	''' Displays the dungeon in its current state.  Prints board, does not return anything. '''
-	# Creates a printable view based on dungeon matrix
+	# Creates a printable view based on dungeon board
 	print("The dungeon:\n")
 	board = ''
 	# Go through each row
@@ -47,7 +48,7 @@ def display_dungeon(dungeon_board):
 
 
 def create_dungeon(dungeon_board, trap_count):
-	'''	Creates a dungeon with specified traps, a single treasure and a single player. '''
+	'''	Creates a dungeon with specified trap count, four monsters, a single treasure and a single player. '''
 	# Creates basic dungeon of max_size by max_size in nested lists
 	dungeon_board = build_dungeon(dungeon_board)
 	# Places number of traps specified
@@ -72,11 +73,6 @@ def create_dungeon(dungeon_board, trap_count):
 		if dungeon_board[treasure_row][treasure_col] != deadly_trap:
 			dungeon_board[treasure_row][treasure_col] = treasure
 			treasure_placed = True
-	# Remove previous player positions
-	for row in range(len(dungeon_board)):
-		if player in dungeon_board[row]:
-			col = dungeon_board[row].index(player)
-			dungeon_board[row][col] = floor
 	# Places player
 	player_placed = False
 	while (not player_placed):
@@ -84,9 +80,19 @@ def create_dungeon(dungeon_board, trap_count):
 		player_row = random.randrange(max_size)
 		player_col = random.randrange(max_size)
 		# Check that square is not already occupied by trap or treasure
-		if (dungeon_board[player_row][player_col] != deadly_trap) and (dungeon_board[player_row][player_col] != treasure):
+		if dungeon_board[player_row][player_col] != deadly_trap and dungeon_board[player_row][player_col] != treasure:
 			dungeon_board[player_row][player_col] = player
 			player_placed = True
+	# Places monsters
+	for critter in range(4): # hard coded 4 monsters
+		critter_placed = False
+		while (not critter_placed):
+			critter_row = random.randrange(max_size)
+			critter_col = random.randrange(max_size)
+			# Check that the square is not already occupied
+			if dungeon_board[critter_row][critter_col] != deadly_trap and dungeon_board[critter_row][critter_col] != treasure and dungeon_board[critter_row][critter_col] != player:
+				dungeon_board[critter_row][critter_col] = monster
+				critter_placed = True
 	return dungeon_board
 
 def get_move_from_player():
@@ -121,37 +127,33 @@ def get_move(dungeon_board):
 	for row in range(len(dungeon_board)):
 		if player in dungeon_board[row]:
 			player_row = row
-			print("row", player_row)
 			# Finding column by index
 			player_col = dungeon_board[row].index(player)
-			print("col", player_col)
 
 	# If, for some reason, neither the row or column can be found
 	if player_row == -1:
 		player_row = 0
-		print("player_row could not be found.")
+		print('player_row could not be found.')
 	if player_col == -1:
 		player_col = 0
-		print("player_col could not be found.")
+		print('player_col could not be found.')
 	# Save original location to know which square to revert back to floor
 	old_player_position = (player_row, player_col)
-	print("prow", player_row, "pcol", player_col)
 
-	if player_move == "L":
+	if player_move == 'L':
 	# Move left player_col -1
 		player_col -= 1
-	elif player_move == "R":
+	elif player_move == 'R':
 	# Move right player_col + 1
 		player_col +=1
-	elif player_move == "U":
+	elif player_move == 'U':
 	# Move up player_row - 1
 		player_row -= 1
-	elif player_move == "D":
+	elif player_move == 'D':
 	# Move down player_row + 1
 		player_row += 1
 	# Save player destination
 	new_player_position = (player_row, player_col)
-	print("nrow", player_row, "ncol", player_col)
 
 	return old_player_position, new_player_position
 
@@ -191,6 +193,11 @@ def update_dungeon(dungeon_board, orig_pos, dest_pos):
 		dungeon_board[dest_row][dest_col] = player
 		dungeon_board[orig_row][orig_col] = floor
 		game_over = True
+	elif check_move(dungeon_board, dest_pos, monster):
+		print("You were a delicious snack. The monster is happy.")
+		dungeon_board[dest_row][dest_col] = monster
+		dungeon_board[orig_row][orig_col] = floor
+		game_over = True
 	else:
 		dungeon_board[dest_row][dest_col] = player
 		dungeon_board[orig_row][orig_col] = floor
@@ -201,6 +208,7 @@ def update_dungeon(dungeon_board, orig_pos, dest_pos):
 
 
 def play_game(dungeon_board, game_over = False):
+	'''	Runs the game cycle as long as the player would like. '''
 	trap_count = input('How many traps would you like to avoid? ')
 	count = 1
 	try: 
@@ -219,6 +227,7 @@ def play_game(dungeon_board, game_over = False):
 	display_dungeon(dungeon_board)
 	while (not game_over):
 		player_origin_pos, player_dest_pos = get_move(dungeon_board)
+		make_monsters_move(dungeon_board)
 		game_over, dungeon_board = update_dungeon(dungeon_board, player_origin_pos, player_dest_pos)
 		display_dungeon(dungeon_board)
 	replay = input('Would you like to try again? Y/y to continue, or any other character to quit. ')
@@ -230,5 +239,54 @@ def play_game(dungeon_board, game_over = False):
 		print("Ta ta for now.")
 
 
+def make_monsters_move(dungeon_board):
+	''' Gathers locations of monsters and attempts a random move. '''
+	list_of_monster_pos = []  # Expecting tuples for monster at row, col
+	for row in range(len(dungeon_board)):
+		for col in range(len(dungeon_board[row])):
+			if dungeon_board[row][col] == monster:
+				# Save monster's position
+				m_pos = (row, col)
+				list_of_monster_pos.append(m_pos)				
+	print(list_of_monster_pos)
+
+	move_options = ['L', 'R', 'U', 'D']
+	for i in range(len(list_of_monster_pos)):
+		# Get original row and column and copy for replacing old position
+		m_row, m_col = list_of_monster_pos[i]
+		orig_m_row, orig_m_col = list_of_monster_pos[i]
+		valid_move = False
+		while (not valid_move):
+			# Get random direction
+			random_index = random.randrange(len(move_options))
+			random_direction = move_options[random_index]
+			# Attempt move within bounds and not occupied, else try random direction
+			if random_direction == 'L' and m_col > 0 and dungeon_board[m_row][m_col - 1] == floor:
+			# Move left player_col -1
+				m_col -= 1
+				valid_move = True
+			elif random_direction == 'R' and  m_col < max_size - 2 and dungeon_board[m_row][m_col + 1] == floor:
+			# Move right player_col + 1
+				m_col +=1
+				valid_move = True
+			elif random_direction == 'U' and m_row > 0 and dungeon_board[m_row - 1][m_col] == floor:
+			# Move up player_row - 1
+				m_row -= 1
+				valid_move = True
+			elif random_direction == 'D' and m_row < max_size - 2 and dungeon_board[m_row + 1][m_col] == floor:
+			# Move down player_row + 1
+				m_row += 1
+				valid_move = True
+			else:
+				valid = move = False
+		# Save monster destination
+		new_m_position = (m_row, m_col)
+
+		# Update 'old' position back to floor
+		dungeon_board[m_row][m_col] = monster
+		dungeon_board[orig_m_row][orig_m_col] = floor
+
+		
+	
 
 play_game(dungeon)
