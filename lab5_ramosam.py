@@ -58,7 +58,7 @@ class Triangle:
         elif self.side2 > self.side1 and self.side2 > self.side3:
             biggest = self.side2
             small1 = self.side1
-            small1 = self.side3
+            small2 = self.side3
         elif self.side3 > self.side1 and self.side3 > self.side2:
             biggest = self.side3
             small1 = self.side1
