@@ -88,6 +88,8 @@ class CreditCard:
     def setCreditLimit(self, max_limit):
         if max_limit < 0:
             print('The credit limit cannot be set to a negative value.')
+        elif max_limit < self.balance:
+            print('The credit limit cannot be set to a value lower than the current balance.')
         else:
             self.credit_limit = max_limit
 
